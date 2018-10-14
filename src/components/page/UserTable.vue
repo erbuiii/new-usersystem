@@ -8,7 +8,7 @@
 		
 		<el-container class="col">
 			<div class="handle-box row">
-				<el-button type="primary" icon="delete">批量删除</el-button>
+				<el-button type="primary" icon="delete" @click="removeSelection">批量删除</el-button>
 				<el-button type="primary" plain>自定义查询</el-button>
 				<el-input placeholder="输入关键词"></el-input>
 				<el-button type="primary" icon="el-icon-search">搜索</el-button>
@@ -19,7 +19,7 @@
 				border 
 				style="width: 100%" 
 				ref="multipleTable" 
-				@selection-change="">
+				@selection-change="selectionChange">
 				<el-table-column
 					type="selection"
 					width="50">
@@ -54,13 +54,13 @@
 					>
 					<template slot-scope="scope" class="row">
 						<el-button size="small" @click="">编辑</el-button>
-						<el-button size="small" type="danger" @click="">删除</el-button>
+						<el-button size="small" type="danger" @click="deleteClick(scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
 
 			<div class="pagination">
-				<el-pagination :total="100" @current-change="" layout="prev, pager, next">
+				<el-pagination :total="total" @current-change="" layout="prev, pager, next">
 					
 				</el-pagination>
 			</div>
@@ -82,9 +82,9 @@
 		name: 'usertable',
 		data() {
 			return {
-				url: './static/usertable.json',
+				//url: './static/usertable.json',
 				tableData: [{
-					"name": "小王",
+					"name": "offer到手",
 					"grade": "大三",
 					"division": "理工学部",
 					"college": "信息工程学院",
@@ -132,8 +132,13 @@
 					"college": "信息工程学院",
 					"major": "什么都学不动"
 				}],
-				cur_page: 1,
-				editVisible: false,
+				loading: false,			// 显示加载中的样式
+				cur_page: 1,			// 当前页
+				pageSize: 100,			// 分页大小
+				total: 800,				// 总记录数
+				multipleSelection: [],	// 多选值
+				editVisible: false,		// 编辑界面是否显示
+				delVisible: false,		// 删除的弹出框
 				del_list: [],
 				form: {
 					name: '',
@@ -141,7 +146,8 @@
 					division: '',
 					college: '',
 					major: ''
-				}
+				},
+				idx: -1
 			}
 		},
 		/*created() {
@@ -158,6 +164,15 @@
 			}
 		},*/
 		methods: {
+			// 表格重新加载数据
+			loadingData() {
+				var _self = this;
+				_self.loading = true;
+				setTimeout(function() {
+					console.info('加载数据成功');
+					_self.loading = false;
+				}, 300);
+			},
 			// 获取表格数据
 			getData() {
 				// 开发环境使用 easy-mock 数据，正式环节使用json文件
@@ -186,6 +201,63 @@
 					this.tableData = res.data.list;
 				})*/
 			},
+
+			// 删除事件
+			deleteClick(row) {
+				var _self = this;
+				this.$confirm('确认删除' + row.name + '吗？', '提示', {
+					type: 'warning'
+				}).then(function(){
+					_self.$message({
+						message: row.name + '删除成功',
+						type: 'success'
+					});
+					_self.loadingData(); //重新加载数据
+				}).catch(function(e){
+					if (e != 'cancel') {
+						console.log('出现错误：' + e);
+					}
+				});
+			},
+
+			// 勾选框事件
+			selectionChange(val) {
+				for (var i = 0; i < val.length; i++) {
+					var row = val[i];
+				}
+				this.multipleSelection = val;
+				console.info(val);
+			},
+			// 删除所选事件，批量删除
+			removeSelection() {
+				var _self = this;
+				var multipleSelection = this.multipleSelection;
+				if (multipleSelection.length < 1) {
+					_self.$message({
+						message: '请至少选中一条记录',
+						type: 'error'
+					});
+					return;
+				}
+				var ids = "";
+				for (var i = 0; i < multipleSelection.length; i++) {
+					var row = multipleSelection[i];
+					ids += row.name + ","
+				}
+				this.$confirm('确认删除' + ids + '吗？', '提示', {
+					type: 'warning'
+				}).then(function(){
+					_self.message({
+						message: ids + '删除成功',
+						type: 'success'
+					});
+					_self.loadingData();
+				}).catch(function(e){
+					if (e != 'cancel') {
+						console.log('出现错误：' + e);
+					}
+				});
+			}
 		}
 	}
 </script>
