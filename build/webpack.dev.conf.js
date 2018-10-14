@@ -10,6 +10,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 
+/* */
+const express = require('express')
+const app = express()
+var data = require('../static/usertable.json')
+var apiRoutes = express.Router()
+/*apiRoutes.get('/table', function(req, res) {
+  res.json(appData)
+})*/
+app.use(apiRoutes)
+
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 

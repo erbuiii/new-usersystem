@@ -22,6 +22,12 @@ a {
 	align-items: center;
 }
 
+.col {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
 .content-box {
 	position: absolute;
 	left: 250px;

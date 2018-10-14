@@ -16,12 +16,19 @@ export default new Router({
       children: [
       	{
       		path: '/dashboard',
-      		component: resolve => require(['../components/page/Dashboard.vue'], resolve)
+      		component: resolve => require(['../components/page/Dashboard.vue'], resolve),
+          meta: { title: '系统首页' }
       	},
       	{
       		path: '/table',
-      		component: resolve => require(['../components/page/Table.vue'], resolve)
-      	}
+      		component: resolve => require(['../components/page/UserTable.vue'], resolve),
+          meta: { title: '基础表格' }
+      	},
+        {
+          path: '/charts',
+          component: resolve => require(['../components/page/Charts.vue'], resolve),
+          meta: { title: '图表' }
+        }
       ]
     },
     {
